@@ -38,12 +38,10 @@ export default function App(){
     
       const dataText = await response.text();
       console.log("Response Text:", dataText);
-    
-      // Parse XML using DOMParser
+
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(dataText, "text/xml");
-    
-      // Extract data from the XML document
+      
       const location = xmlDoc.querySelector("request>query").textContent;
       const tempC = xmlDoc.querySelector("temp_C").textContent;
       const weatherIconUrl = xmlDoc.querySelector("weatherIconUrl").textContent;
@@ -62,18 +60,21 @@ export default function App(){
       });
     } finally {
       setLoading(false);
-    }
-    
-    
-    
-    
+    }    
     
   }
 
   return (
     <Container
     maxWidth="xs"
-    sx={{mt:2}}
+    sx={{
+      mt: 2,
+      backgroundImage: 'url("https://via.placeholder.com/1150")',
+ 
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+    }}
     >
       <Typography
       variant="h3"
@@ -81,7 +82,7 @@ export default function App(){
       align="center"
       gutterBottom
       >
-        Weather App
+        Cómo está el clima?
       </Typography>
       <Box
       sx={{display:"grid", gap:2}}
@@ -148,7 +149,14 @@ export default function App(){
         href="https://www.weatherapi.com/"
         title="Weather API"
         >
-          WeatherAPI.com
+          WeatherAPI.com 
+        </a>
+        Developed by:{" "}
+        <a
+        href="https://marianomasondo.github.io/Porfolio/"
+        title="Mariano Masondo"
+        >
+           Mariano Masondo
         </a>
       </Typography>
     </Container>
