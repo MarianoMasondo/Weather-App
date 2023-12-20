@@ -1,54 +1,45 @@
 import PropTypes from "prop-types";
 import { AppBar, Toolbar, Typography, TextField, Box } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
-import { useEffect } from "react";
 
 const Navbar = ({ city, setCity, onSubmit, loading, error }) => {
-  const obtenerUbicacionUsuario = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const latitud = position.coords.latitude;
-          const longitud = position.coords.longitude;
-
-          console.log(`Ubicación actual: Latitud ${latitud}, Longitud ${longitud}`);
-        },
-        (error) => {
-          console.error('Error al obtener la ubicación:', error.message);
-        }
-      );
-    } else {
-      console.error('La geolocalización no está soportada por este navegador');
-    }
-  };
-
-  useEffect(() => {
-    obtenerUbicacionUsuario();
-  }, []);
-
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#343a40" }}>
-      <Toolbar>
-        <Typography variant="h4">How is the weather?</Typography>
+    <AppBar
+      position="static"
+      sx={{
+        backgroundColor: "#343a40",
+        width: "100%",
+        height: "8vh",
+        justifyContent: { xs: "center", md: "space-evenly" },
+      }}
+    >
+      <Toolbar
+        sx={{
+          flexDirection: { xs: "column", md: "row" },
+          alignItems: { xs: "center", md: "center" },
+          justifyContent: { xs: "center", md: "space-evenly" },
+          textAlign: { xs: "center" },
+        }}
+      >
+        <Typography variant="h4" mb={{ xs: 1, md: 0 }}>
+          How is the weather?
+        </Typography>
+
         <Box
           sx={{
-            marginLeft: "auto",
             display: "flex",
-            alignItems: "center",
+            flexDirection: { xs: "column", md: "row" },
+            alignItems: { xs: "center", md: "center" },
+            width: "sm",
+            mb: { xs: 1, md: 0 },
           }}
         >
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <img
-              src="https://w1.pngwing.com/pngs/188/826/png-transparent-circle-design-sunrise-logo-sunset-horizon-orange-line-thumbnail.png"
-              alt="Centrally located image"
-              style={{ width: "100px", height: "50px" }}
-            />
-          </div>
           <TextField
             sx={{
-              borderColor: "white",
+              width: "sm",
+              mb: 1,
               "& label": {
-                color: "blue",
+                color: "#6c757d",
               },
               "& input": {
                 color: "white",
@@ -56,14 +47,16 @@ const Navbar = ({ city, setCity, onSubmit, loading, error }) => {
               "& .MuiOutlinedInput-notchedOutline": {
                 borderColor: "white",
               },
-              "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#6c757d",
-              },
-              "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                borderColor: "#6c757d", 
-              },
+              "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline":
+                {
+                  borderColor: "#6c757d",
+                },
+              "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                {
+                  borderColor: "#6c757d",
+                },
               "& .MuiOutlinedInput-input": {
-                padding: "10px", 
+                padding: "10px",
               },
             }}
             id="city"
@@ -81,12 +74,13 @@ const Navbar = ({ city, setCity, onSubmit, loading, error }) => {
             type="submit"
             variant="contained"
             sx={{
+              width: "sm",
               backgroundColor: "#495057",
               "&:hover": {
                 backgroundColor: "#6c757d",
               },
               "& .MuiButton-label": {
-                color: "white", 
+                color: "white",
               },
             }}
             loading={loading}
@@ -113,8 +107,3 @@ Navbar.propTypes = {
 };
 
 export default Navbar;
-
-
-
-
-

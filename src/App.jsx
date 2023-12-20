@@ -58,8 +58,12 @@ export default function App() {
       const wind = xmlDoc.querySelector("windspeedKmph").textContent;
 
       const date = xmlDoc.querySelector("weather>date").textContent;
-      const sunrise = xmlDoc.querySelector("weather>astronomy>sunrise").textContent;
-      const sunset = xmlDoc.querySelector("weather>astronomy>sunset").textContent;
+      const sunrise = xmlDoc.querySelector(
+        "weather>astronomy>sunrise"
+      ).textContent;
+      const sunset = xmlDoc.querySelector(
+        "weather>astronomy>sunset"
+      ).textContent;
 
       setWeather({
         city: location,
@@ -84,7 +88,17 @@ export default function App() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        width: { xs: "100vw", md: "80vw" },
+        minHeight: "100vh",
+        backgroundImage:
+          "url(https://wallpapers.com/images/hd/sky-clouds-hd-desktop-wallpaper-high-definition-fullscreen-yqckhncsi87skp5n.webp)",
+        backgroundSize: "cover",
+      }}
+    >
       <div style={{ flex: 1 }}>
         <Navbar
           city={city}
@@ -96,24 +110,31 @@ export default function App() {
       </div>
 
       <Container
+      
         sx={{
-          backgroundColor: "#adb5bd",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
+          backgroundColor: "rgba(173, 181, 189, 0.4)",
+          backgroundSize: "cover",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          height: "80vh",
-          width: "35vw",
+          width: { xs: "100%", md: "40%" },
           borderRadius: "20px",
-          mt: "1%",
-          mb: "1%",
+          marginBottom: { xs: "100%", md: "17.5%" },
+          padding: "20px",
         }}
       >
-        {weather.city && (
+        <Box
+          sx={{
+            display: "grid",
+            gap: 2,
+            gridTemplateColumns: "repeat(3, 1fr)",
+            margin: "2%",
+          }}
+        >
           <Box
-            sx={{             
+            sx={{
+              gridColumn: "1 / span 1",
               textAlign: "center",
             }}
           >
@@ -124,27 +145,24 @@ export default function App() {
               component="img"
               alt={weather.conditionText}
               src={weather.icon}
-              sx={{width: "100px", height: "100px" }}
+              sx={{ width: "100px", height: "100px" }}
             />
             <Typography variant="h6" component="h3" mt="10%">
               Temperature: {weather.temp} °C
             </Typography>
+            <Typography variant="h6" component="h3" mt="10%">
+              {weather.conditionText}
+            </Typography>
           </Box>
-        )}
 
-        <Box
-          sx={{
-            display: "grid",
-            gap: 2,
-            gridTemplateColumns: "repeat(2, 1fr)",
-            marginTop: "2%",
-            marginBottom: "2%",
-          }}
-        >
           <Box
             sx={{
-              gridColumn: "1 / span 1",
+              gridColumn: "2 / span 1",
               textAlign: "left",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "left",
+              justifyContent: "center",
             }}
           >
             <Typography variant="h6" component="h1">
@@ -160,8 +178,12 @@ export default function App() {
 
           <Box
             sx={{
-              gridColumn: "2 / span 1",
+              gridColumn: "3 / span 1",
               textAlign: "left",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "left",
+              justifyContent: "center",
             }}
           >
             <Typography variant="h6" component="h1">
@@ -174,7 +196,7 @@ export default function App() {
               Sunset: {weather.sunset}
             </Typography>
           </Box>
-        </Box>        
+        </Box>
       </Container>
 
       <footer
@@ -185,21 +207,26 @@ export default function App() {
           padding: "8px",
           backgroundColor: "#343a40",
           color: "white",
-          minHeight: "10vh",
+          minHeight: "5vh",
         }}
       >
-        <Typography sx={{ fontSize: "15px", mr: "3%"}}>
+        <Typography sx={{ fontSize: "15px", mr: "3%" }}>
           Powered by:{" "}
-          <a href="https://www.weatherapi.com/" title="Weather API">
+          <a
+            href="https://www.weatherapi.com/"
+            title="Weather API"
+            style={{ textDecoration: "none", color: "white" }}
+          >
             WeatherAPI.com
           </a>
         </Typography>
 
-        <Typography sx={{ fontSize: "15px", ml: "3%"}}>
+        <Typography sx={{ fontSize: "15px", ml: "3%" }}>
           Developed by:{" "}
           <a
             href="https://marianomasondo.github.io/Porfolio/"
             title="Mariano Masondo"
+            style={{ textDecoration: "none", color: "white" }}
           >
             Mariano Masondo
           </a>
@@ -208,5 +235,3 @@ export default function App() {
     </div>
   );
 }
-
-
