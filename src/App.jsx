@@ -141,7 +141,7 @@ export default function App() {
             }}
           >
             <Typography variant="h4" component="h2" mb="10%">
-              {weather.city}, {weather.country}
+              {weather.city} {weather.country}
             </Typography>
             <Box
               component="img"
