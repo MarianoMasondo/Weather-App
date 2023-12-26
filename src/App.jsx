@@ -5,6 +5,8 @@ import Navbar from "./components/navBar";
 const API_WEATHER = `http://api.worldweatheronline.com/premium/v1/weather.ashx?key=${
   import.meta.env.VITE_API_KEY
 }&q=`;
+const DEFAULT_IMAGE_URL =
+  "https://media.wired.co.uk/photos/606dba1c9a15f73a597a2aa1/master/w_1600%2Cc_limit/weather.jpg";
 
 export default function App() {
   const [city, setCity] = useState("");
@@ -144,7 +146,7 @@ export default function App() {
             <Box
               component="img"
               alt={weather.conditionText}
-              src={weather.icon}
+              src={city.trim() ? weather.icon : DEFAULT_IMAGE_URL}
               sx={{ width: "100px", height: "100px" }}
             />
             <Typography variant="h6" component="h3" mt="10%">
