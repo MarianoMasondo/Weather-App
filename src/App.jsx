@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Container, Box, Typography } from "@mui/material";
 import Navbar from "./components/navBar";
 
 const API_WEATHER = `http://api.worldweatheronline.com/premium/v1/weather.ashx?key=${
   import.meta.env.VITE_API_KEY
 }&q=`;
-const DEFAULT_IMAGE_URL =
-  "https://media.wired.co.uk/photos/606dba1c9a15f73a597a2aa1/master/w_1600%2Cc_limit/weather.jpg";
+// const DEFAULT_IMAGE_URL =
+//   "https://media.wired.co.uk/photos/606dba1c9a15f73a597a2aa1/master/w_1600%2Cc_limit/weather.jpg";
 
 export default function App() {
   const [city, setCity] = useState("");
@@ -30,24 +30,13 @@ export default function App() {
     sunset: "",
   });
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError({
-      error: false,
-      message: "",
-    });
+  const getWeatherByCoordinates = async (coordinates) => {
     try {
-      if (!city.trim()) {
-        throw { message: "El campo ciudad es obligatorio" };
-      }
-
-      const response = await fetch(`${API_WEATHER}${city}`);
-      console.log("API Response:", response);
+      const response = await fetch(
+        `${API_WEATHER}${coordinates.latitude},${coordinates.longitude}`
+      );
 
       const dataText = await response.text();
-      console.log("Response Text:", dataText);
-
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(dataText, "text/xml");
 
@@ -89,6 +78,82 @@ export default function App() {
     }
   };
 
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError({
+      error: false,
+      message: "",
+    });
+    try {
+      if (!city.trim()) {
+        throw { message: "El campo ciudad es obligatorio" };
+      }
+
+      const response = await fetch(`${API_WEATHER}${city}`);
+      const dataText = await response.text();
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(dataText, "text/xml");
+
+      const location = xmlDoc.querySelector("request>query").textContent;
+      const tempC = xmlDoc.querySelector("temp_C").textContent;
+      const weatherIconUrl = xmlDoc.querySelector("weatherIconUrl").textContent;
+      const weatherDesc = xmlDoc.querySelector("weatherDesc").textContent;
+      const FeelsLike = xmlDoc.querySelector("FeelsLikeC").textContent;
+      const humidity = xmlDoc.querySelector("humidity").textContent;
+      const wind = xmlDoc.querySelector("windspeedKmph").textContent;
+
+      const date = xmlDoc.querySelector("weather>date").textContent;
+      const sunrise = xmlDoc.querySelector(
+        "weather>astronomy>sunrise"
+      ).textContent;
+      const sunset = xmlDoc.querySelector(
+        "weather>astronomy>sunset"
+      ).textContent;
+
+      setWeather({
+        city: location,
+        temp: tempC,
+        icon: weatherIconUrl,
+        conditionText: weatherDesc,
+        feel: FeelsLike,
+        humidity: humidity,
+        wind: wind,
+        date: date,
+        sunrise: sunrise,
+        sunset: sunset,
+      });
+    } catch (error) {
+      setError({
+        error: true,
+        message: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const getLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            getWeatherByCoordinates({ latitude, longitude });
+          },
+          (error) => {
+            console.error("Error getting location:", error.message);
+          }
+        );
+      } else {
+        console.error("Geolocation is not supported by this browser.");
+      }
+    };
+
+    getLocation();
+  }, []);
+
   return (
     <div
       style={{
@@ -108,11 +173,11 @@ export default function App() {
           onSubmit={onSubmit}
           loading={loading}
           error={error}
+          getWeatherByCoordinates={() => getWeatherByCoordinates({})}
         />
       </div>
 
       <Container
-      
         sx={{
           backgroundColor: "rgba(173, 181, 189, 0.4)",
           backgroundSize: "cover",
@@ -146,7 +211,7 @@ export default function App() {
             <Box
               component="img"
               alt={weather.conditionText}
-              src={city.trim() ? weather.icon : DEFAULT_IMAGE_URL}
+              src={city.trim() ? weather.icon : 0}
               sx={{ width: "100px", height: "100px" }}
             />
             <Typography variant="h6" component="h3" mt="10%">

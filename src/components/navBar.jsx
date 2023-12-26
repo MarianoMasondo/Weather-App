@@ -1,3 +1,4 @@
+// navBar.js
 import PropTypes from "prop-types";
 import { AppBar, Toolbar, Typography, TextField, Box } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
@@ -89,6 +90,7 @@ const Navbar = ({ city, setCity, onSubmit, loading, error }) => {
           >
             Search
           </LoadingButton>
+        
         </Box>
       </Toolbar>
     </AppBar>
@@ -104,6 +106,8 @@ Navbar.propTypes = {
     error: PropTypes.bool.isRequired,
     message: PropTypes.string.isRequired,
   }).isRequired,
+  getWeatherByCoordinates: PropTypes.func.isRequired,
 };
 
 export default Navbar;
+
