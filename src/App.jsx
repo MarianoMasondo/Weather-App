@@ -5,8 +5,6 @@ import Navbar from "./components/navBar";
 const API_WEATHER = `http://api.worldweatheronline.com/premium/v1/weather.ashx?key=${
   import.meta.env.VITE_API_KEY
 }&q=`;
-// const DEFAULT_IMAGE_URL =
-//   "https://media.wired.co.uk/photos/606dba1c9a15f73a597a2aa1/master/w_1600%2Cc_limit/weather.jpg";
 
 export default function App() {
   const [city, setCity] = useState("");
@@ -35,18 +33,17 @@ export default function App() {
       const response = await fetch(
         `${API_WEATHER}${coordinates.latitude},${coordinates.longitude}`
       );
-  
+
       const dataText = await response.text();
       const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(dataText, "text/xml");  
-      const location = xmlDoc.querySelector("request>query").textContent;
+      const xmlDoc = parser.parseFromString(dataText, "text/xml");
       const tempC = xmlDoc.querySelector("temp_C").textContent;
       const weatherIconUrl = xmlDoc.querySelector("weatherIconUrl").textContent;
       const weatherDesc = xmlDoc.querySelector("weatherDesc").textContent;
       const FeelsLike = xmlDoc.querySelector("FeelsLikeC").textContent;
       const humidity = xmlDoc.querySelector("humidity").textContent;
       const wind = xmlDoc.querySelector("windspeedKmph").textContent;
-  
+
       const date = xmlDoc.querySelector("weather>date").textContent;
       const sunrise = xmlDoc.querySelector(
         "weather>astronomy>sunrise"
@@ -54,9 +51,9 @@ export default function App() {
       const sunset = xmlDoc.querySelector(
         "weather>astronomy>sunset"
       ).textContent;
-  
+
       setWeather({
-        city: location,
+        city: "The Weather here is...",
         temp: tempC,
         icon: weatherIconUrl,
         conditionText: weatherDesc,
@@ -76,7 +73,6 @@ export default function App() {
       setLoading(false);
     }
   };
-  
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -150,10 +146,9 @@ export default function App() {
         console.error("Geolocation is not supported by this browser.");
       }
     };
-  
+
     getLocation();
   }, []);
-  
 
   return (
     <div
@@ -189,6 +184,7 @@ export default function App() {
           width: { xs: "100%", md: "40%" },
           borderRadius: "20px",
           marginBottom: { xs: "100%", md: "17.5%" },
+          marginTop: { xs: "50%", md: "2%" },
           padding: "20px",
         }}
       >
@@ -206,7 +202,7 @@ export default function App() {
               textAlign: "center",
             }}
           >
-            <Typography variant="h4" component="h2" mb="10%">
+            <Typography variant="h5" component="h2" mb="10%" sx={{ fontWeight: 'bold' }}>
               {weather.city} {weather.country}
             </Typography>
             <Box
@@ -215,10 +211,13 @@ export default function App() {
               src={city.trim() ? weather.icon : weather.icon}
               sx={{ width: "100px", height: "100px" }}
             />
-            <Typography variant="h6" component="h3" mt="10%">
-              Temperature: {weather.temp} °C
+            <Typography variant="h6" component="h3" mt="10%" sx={{ fontWeight: 'bold' }}>
+              Temperature:
             </Typography>
-            <Typography variant="h6" component="h3" mt="10%">
+            <Typography variant="h6" component="h1">
+              {weather.feel} °C
+            </Typography>
+            <Typography variant="h5" component="h3" mt="10%" sx={{ fontWeight: 'bold' }}>
               {weather.conditionText}
             </Typography>
           </Box>
@@ -233,14 +232,23 @@ export default function App() {
               justifyContent: "center",
             }}
           >
-            <Typography variant="h6" component="h1">
-              Feels like: {weather.feel} °C
+            <Typography variant="h6" component="h1" sx={{ fontWeight: 'bold' }}>
+              Feels like:
             </Typography>
             <Typography variant="h6" component="h1">
-              Humidity: {weather.humidity} %
+              {weather.feel} °C
+            </Typography>
+            <Typography variant="h6" component="h1" sx={{ fontWeight: 'bold' }}>
+              Humidity:
             </Typography>
             <Typography variant="h6" component="h1">
-              Wind: {weather.wind} km/h
+              {weather.humidity} %
+            </Typography>
+            <Typography variant="h6" component="h1" sx={{ fontWeight: 'bold' }}>
+              Wind:
+            </Typography>
+            <Typography variant="h6" component="h1">
+              {weather.wind} km/h
             </Typography>
           </Box>
 
@@ -254,14 +262,23 @@ export default function App() {
               justifyContent: "center",
             }}
           >
-            <Typography variant="h6" component="h1">
-              Date: {weather.date}
+            <Typography variant="h6" component="h1" sx={{ fontWeight: 'bold' }}>
+              Date:
             </Typography>
             <Typography variant="h6" component="h1">
-              Sunrise: {weather.sunrise}
+              {weather.date}
+            </Typography>
+            <Typography variant="h6" component="h1" sx={{ fontWeight: 'bold' }}>
+              Sunrise:
             </Typography>
             <Typography variant="h6" component="h1">
-              Sunset: {weather.sunset}
+              {weather.sunrise}
+            </Typography>
+            <Typography variant="h6" component="h1" sx={{ fontWeight: 'bold' }}>
+              Sunset:
+            </Typography>
+            <Typography variant="h6" component="h1">
+              {weather.sunset}
             </Typography>
           </Box>
         </Box>
