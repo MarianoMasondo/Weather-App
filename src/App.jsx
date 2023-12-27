@@ -184,7 +184,7 @@ export default function App() {
           width: { xs: "100%", md: "40%" },
           borderRadius: "20px",
           marginBottom: { xs: "100%", md: "17.5%" },
-          marginTop: { xs: "50%", md: "2%" },
+          marginTop: { xs: "50%", md: "5.5%" },
           padding: "20px",
         }}
       >

@@ -1,4 +1,3 @@
-// navBar.js
 import PropTypes from "prop-types";
 import { AppBar, Toolbar, Typography, TextField, Box } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
@@ -9,14 +8,14 @@ const Navbar = ({ city, setCity, onSubmit, loading, error }) => {
       position="static"
       sx={{
         backgroundColor: "#343a40",
-        width: "100%",
-        height: "8vh",
+        width: { xs: "100%", md: "100%" },
+        height: { xs: "10%", md: "10%" },
         justifyContent: { xs: "center", md: "space-evenly" },
       }}
     >
       <Toolbar
         sx={{
-          flexDirection: { xs: "column", md: "row" },
+          flexDirection: { xs: "row", md: "row" },
           alignItems: { xs: "center", md: "center" },
           justifyContent: { xs: "center", md: "space-evenly" },
           textAlign: { xs: "center" },
