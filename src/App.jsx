@@ -2,9 +2,7 @@ import { useState, useEffect } from "react";
 import { Container, Box, Typography } from "@mui/material";
 import Navbar from "./components/navBar";
 
-const API_WEATHER = `https://api.worldweatheronline.com/premium/v1/weather.ashx?key=${
-  import.meta.env.VITE_API_KEY
-}&q=`;
+const API_WEATHER = `https://api.worldweatheronline.com/premium/v1/weather.ashx?key=${import.meta.env.VITE_API_KEY}&q=`;
 
 export default function App() {
   const [city, setCity] = useState("");
