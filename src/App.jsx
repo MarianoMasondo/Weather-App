@@ -35,11 +35,10 @@ export default function App() {
       const response = await fetch(
         `${API_WEATHER}${coordinates.latitude},${coordinates.longitude}`
       );
-
+  
       const dataText = await response.text();
       const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(dataText, "text/xml");
-
+      const xmlDoc = parser.parseFromString(dataText, "text/xml");  
       const location = xmlDoc.querySelector("request>query").textContent;
       const tempC = xmlDoc.querySelector("temp_C").textContent;
       const weatherIconUrl = xmlDoc.querySelector("weatherIconUrl").textContent;
@@ -47,7 +46,7 @@ export default function App() {
       const FeelsLike = xmlDoc.querySelector("FeelsLikeC").textContent;
       const humidity = xmlDoc.querySelector("humidity").textContent;
       const wind = xmlDoc.querySelector("windspeedKmph").textContent;
-
+  
       const date = xmlDoc.querySelector("weather>date").textContent;
       const sunrise = xmlDoc.querySelector(
         "weather>astronomy>sunrise"
@@ -55,7 +54,7 @@ export default function App() {
       const sunset = xmlDoc.querySelector(
         "weather>astronomy>sunset"
       ).textContent;
-
+  
       setWeather({
         city: location,
         temp: tempC,
@@ -77,6 +76,7 @@ export default function App() {
       setLoading(false);
     }
   };
+  
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -87,7 +87,7 @@ export default function App() {
     });
     try {
       if (!city.trim()) {
-        throw { message: "El campo ciudad es obligatorio" };
+        throw { message: "The city field is required" };
       }
 
       const response = await fetch(`${API_WEATHER}${city}`);
@@ -150,9 +150,10 @@ export default function App() {
         console.error("Geolocation is not supported by this browser.");
       }
     };
-
+  
     getLocation();
   }, []);
+  
 
   return (
     <div
@@ -211,7 +212,7 @@ export default function App() {
             <Box
               component="img"
               alt={weather.conditionText}
-              src={city.trim() ? weather.icon : 0}
+              src={city.trim() ? weather.icon : weather.icon}
               sx={{ width: "100px", height: "100px" }}
             />
             <Typography variant="h6" component="h3" mt="10%">
