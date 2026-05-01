@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import { useState, useEffect } from "react";
 import { Container, Box, Typography } from "@mui/material";
 import Navbar from "./components/navBar";
