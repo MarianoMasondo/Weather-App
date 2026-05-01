@@ -5,7 +5,7 @@ Permite consultar el clima actual de una ciudad y también intenta detectar la u
 
 ## Demo
 
-🔗 [Ver aplicación deployada]((https://marian-weather.vercel.app/))
+🔗 https://marian-weather.vercel.app/
 
 ## Descripción
 
