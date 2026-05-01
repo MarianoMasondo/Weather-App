@@ -1,7 +1,6 @@
 # Weather App
 
-Aplicación meteorológica desarrollada con **React**, **Vite** y **Material UI**.  
-Permite consultar el clima actual de una ciudad y también intenta detectar la ubicación del usuario para mostrar el clima automáticamente.
+Weather App es una aplicación web desarrollada con **React**, **Vite** y **Material UI** que permite consultar el clima actual de cualquier ciudad. Además, puede detectar la ubicación del usuario —si este concede el permiso desde el navegador— para mostrar automáticamente la información meteorológica correspondiente a su zona.
 
 ## Demo
 
@@ -43,4 +42,5 @@ La aplicación muestra datos como:
 - Visualización de información climática en una tarjeta.
 - Diseño responsive con Material UI.
 - Deploy en Vercel.
+
 
