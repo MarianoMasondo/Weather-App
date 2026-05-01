@@ -43,4 +43,6 @@ La aplicación muestra datos como:
 - Diseño responsive con Material UI.
 - Deploy en Vercel.
 
+## <span style="color:#F778BA">👨‍💻 Autor</span>
 
+Desarrollado por **Mariano Masondo**.
