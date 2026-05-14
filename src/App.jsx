@@ -12,7 +12,7 @@ import "./App.css";
 const API_WEATHER =
   // "https://api.worldweatheronline.com/premium/v1/weather.ashx?key=fe3597c6c0f04584b1e173127230512&q=";
   
-  "ffdd5d05d8f6478398e195037261405";
+  "https://api.weatherapi.com/v1/forecast.json?key=ffdd5d05d8f6478398e195037261405&lang=es";
 
 const DEFAULT_CITY = "Cordoba, Argentina";
 
