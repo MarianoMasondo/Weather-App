@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import Navbar from "./components/navBar/navBar";
-import CitiesBanner from "./components/citiesBanner/citiesBanner";
+import CitiesBanner from "./components/CitiesBanner/CitiesBanner";
 import "./App.css";
 
 const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
