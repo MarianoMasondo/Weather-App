@@ -10,7 +10,9 @@ import Navbar from "./components/navBar";
 import "./App.css";
 
 const API_WEATHER =
-  "https://api.worldweatheronline.com/premium/v1/weather.ashx?key=fe3597c6c0f04584b1e173127230512&q=";
+  // "https://api.worldweatheronline.com/premium/v1/weather.ashx?key=fe3597c6c0f04584b1e173127230512&q=";
+  
+  "https://api.weatherapi.com/v1/current.json?key=fe3597c6c0f04584b1e173127230512&q=";
 
 const DEFAULT_CITY = "Cordoba, Argentina";
 
