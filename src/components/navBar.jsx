@@ -7,6 +7,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
+import { createFilterOptions } from "@mui/material/Autocomplete";
 import { LoadingButton } from "@mui/lab";
 import "./navBar.css";
 
@@ -21,17 +22,56 @@ const cityOptions = [
   "Salta, Argentina",
   "Santa Fe, Argentina",
   "Bariloche, Argentina",
-  "Santiago, Chile",
-  "Montevideo, Uruguay",
+  "Ushuaia, Argentina",
+  "Neuquén, Argentina",
+  "San Juan, Argentina",
+  "San Luis, Argentina",
+  "Corrientes, Argentina",
+  "Resistencia, Argentina",
+  "Posadas, Argentina",
+  "Paraná, Argentina",
+  "Bahía Blanca, Argentina",
+
+  "Florianópolis, Brasil",
   "São Paulo, Brasil",
+  "Río de Janeiro, Brasil",
+  "Curitiba, Brasil",
+  "Porto Alegre, Brasil",
+
+  "Santiago, Chile",
+  "Valparaíso, Chile",
+  "Montevideo, Uruguay",
+  "Punta del Este, Uruguay",
+  "Asunción, Paraguay",
+  "Lima, Perú",
+  "Bogotá, Colombia",
+
   "Madrid, España",
   "Barcelona, España",
+  "Valencia, España",
   "Ciudad de México, México",
+  "Cancún, México",
+
   "New York, USA",
+  "Miami, USA",
+  "Los Angeles, USA",
   "London, UK",
   "Paris, France",
+  "Rome, Italy",
   "Tokyo, Japan",
 ];
+
+const normalizeText = (text) => {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+};
+
+const filterOptions = createFilterOptions({
+  stringify: (option) => normalizeText(option),
+  matchFrom: "start",
+});
 
 const Navbar = ({ city, setCity, onSubmit, loading }) => {
   return (
@@ -46,8 +86,13 @@ const Navbar = ({ city, setCity, onSubmit, loading }) => {
             freeSolo
             options={cityOptions}
             value={city}
-            onInputChange={(event, newInputValue) => setCity(newInputValue)}
-            onChange={(event, newValue) => setCity(newValue || "")}
+            filterOptions={filterOptions}
+            onInputChange={(event, newInputValue) => {
+              setCity(newInputValue);
+            }}
+            onChange={(event, newValue) => {
+              setCity(newValue || "");
+            }}
             className="navbarAutocomplete"
             renderInput={(params) => (
               <TextField
