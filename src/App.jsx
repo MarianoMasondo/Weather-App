@@ -178,7 +178,9 @@ export default function App() {
         onSubmit={onSubmit}
         loading={loading}
       />
+
       <h1 style={{ color: "red" }}>TEST BANNER</h1>
+      
       <main className="appContent">
 
         <CitiesBanner onCitySelect={handleCitySelect} loading={loading} />
