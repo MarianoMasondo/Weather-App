@@ -12,7 +12,7 @@ import { LoadingButton } from "@mui/lab";
 import "./navBar.css";
 
 const cityOptions = [
-  "Córdoba, Argentina",
+  "Cordoba, Argentina",
   "Buenos Aires, Argentina",
   "Rosario, Argentina",
   "Mendoza, Argentina",
