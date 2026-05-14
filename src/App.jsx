@@ -37,24 +37,26 @@ export default function App() {
   });
 
   const translateCondition = useCallback((condition) => {
-    const conditions = {
-      Sunny: "Soleado",
-      Clear: "Despejado",
-      "Partly Cloudy": "Parcialmente nublado",
-      Cloudy: "Nublado",
-      Overcast: "Cubierto",
-      Mist: "Neblina",
-      Fog: "Niebla",
-      "Patchy rain possible": "Posibles lluvias aisladas",
-      "Light rain": "Lluvia ligera",
-      "Moderate rain": "Lluvia moderada",
-      "Heavy rain": "Lluvia fuerte",
-      Thunderstorm: "Tormenta",
-      Snow: "Nieve",
-    };
+  const conditions = {
+    sunny: "Soleado",
+    clear: "Despejado",
+    "partly cloudy": "Parcialmente nublado",
+    cloudy: "Nublado",
+    overcast: "Cubierto",
+    mist: "Neblina",
+    fog: "Niebla",
+    "patchy rain possible": "Posibles lluvias aisladas",
+    "light rain": "Lluvia ligera",
+    "moderate rain": "Lluvia moderada",
+    "heavy rain": "Lluvia fuerte",
+    thunderstorm: "Tormenta",
+    snow: "Nieve",
+  };
 
-    return conditions[condition] || condition;
-  }, []);
+  const normalizedCondition = condition.trim().toLowerCase();
+
+  return conditions[normalizedCondition] || condition;
+}, []);
 
   const parseWeatherData = useCallback(
     (xmlDoc, cityName) => {
