@@ -36,7 +36,7 @@ export default function App() {
     sunset: "",
   });
 
-  const translateCondition = (condition) => {
+  const translateCondition = useCallback((condition) => {
     const conditions = {
       Sunny: "Soleado",
       Clear: "Despejado",
@@ -54,76 +54,85 @@ export default function App() {
     };
 
     return conditions[condition] || condition;
-  };
+  }, []);
 
-  const parseWeatherData = (xmlDoc, cityName) => {
-    const tempC = xmlDoc.querySelector("temp_C")?.textContent;
-    const weatherIconUrl = xmlDoc.querySelector("weatherIconUrl")?.textContent;
-    const weatherDesc = xmlDoc.querySelector("weatherDesc")?.textContent;
-    const feelsLike = xmlDoc.querySelector("FeelsLikeC")?.textContent;
-    const humidity = xmlDoc.querySelector("humidity")?.textContent;
-    const wind = xmlDoc.querySelector("windspeedKmph")?.textContent;
-    const date = xmlDoc.querySelector("weather > date")?.textContent;
-    const sunrise = xmlDoc.querySelector(
-      "weather > astronomy > sunrise"
-    )?.textContent;
-    const sunset = xmlDoc.querySelector(
-      "weather > astronomy > sunset"
-    )?.textContent;
+  const parseWeatherData = useCallback(
+    (xmlDoc, cityName) => {
+      const tempC = xmlDoc.querySelector("temp_C")?.textContent;
+      const weatherIconUrl =
+        xmlDoc.querySelector("weatherIconUrl")?.textContent;
+      const weatherDesc = xmlDoc.querySelector("weatherDesc")?.textContent;
+      const feelsLike = xmlDoc.querySelector("FeelsLikeC")?.textContent;
+      const humidity = xmlDoc.querySelector("humidity")?.textContent;
+      const wind = xmlDoc.querySelector("windspeedKmph")?.textContent;
+      const date = xmlDoc.querySelector("weather > date")?.textContent;
+      const sunrise = xmlDoc.querySelector(
+        "weather > astronomy > sunrise"
+      )?.textContent;
+      const sunset = xmlDoc.querySelector(
+        "weather > astronomy > sunset"
+      )?.textContent;
 
-    if (!tempC) {
-      throw new Error("No se pudo obtener el clima de esa ubicación.");
-    }
-
-    setWeather({
-      city: cityName,
-      temp: tempC,
-      icon: weatherIconUrl || "",
-      conditionText: translateCondition(weatherDesc || ""),
-      feel: feelsLike || "",
-      humidity: humidity || "",
-      wind: wind || "",
-      date: date || "",
-      sunrise: sunrise || "",
-      sunset: sunset || "",
-    });
-  };
-
-  const getWeatherByCity = useCallback(async (cityToSearch) => {
-    setLoading(true);
-    setError({
-      error: false,
-      message: "",
-    });
-
-    try {
-      const response = await fetch(`${API_WEATHER}${cityToSearch}`);
-      const dataText = await response.text();
-
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(dataText, "text/xml");
-
-      const apiError = xmlDoc.querySelector("error > msg")?.textContent;
-
-      if (apiError) {
-        throw new Error("No encontramos esa ciudad. Probá con otra ubicación.");
+      if (!tempC) {
+        throw new Error("No se pudo obtener el clima de esa ubicación.");
       }
 
-      const location =
-        xmlDoc.querySelector("request > query")?.textContent || cityToSearch;
+      setWeather({
+        city: cityName,
+        temp: tempC,
+        icon: weatherIconUrl || "",
+        conditionText: translateCondition(weatherDesc || ""),
+        feel: feelsLike || "",
+        humidity: humidity || "",
+        wind: wind || "",
+        date: date || "",
+        sunrise: sunrise || "",
+        sunset: sunset || "",
+      });
+    },
+    [translateCondition]
+  );
 
-      parseWeatherData(xmlDoc, location);
-    } catch (error) {
+  const getWeatherByCity = useCallback(
+    async (cityToSearch) => {
+      setLoading(true);
       setError({
-        error: true,
-        message: error.message,
+        error: false,
+        message: "",
       });
 
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      try {
+        const response = await fetch(`${API_WEATHER}${cityToSearch}`);
+        const dataText = await response.text();
+
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(dataText, "text/xml");
+
+        const apiError = xmlDoc.querySelector("error > msg")?.textContent;
+
+        if (apiError) {
+          throw new Error(
+            "No encontramos esa ciudad. Probá con otra ubicación."
+          );
+        }
+
+        const location =
+          xmlDoc.querySelector("request > query")?.textContent || cityToSearch;
+
+        parseWeatherData(xmlDoc, location);
+      } catch (error) {
+        setError({
+          error: true,
+          message: error.message,
+        });
+
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [parseWeatherData]
+  );
 
   const getLocationByIP = useCallback(async () => {
     try {
@@ -184,7 +193,7 @@ export default function App() {
         setLoading(false);
       }
     },
-    []
+    [parseWeatherData]
   );
 
   const onSubmit = async (e) => {
