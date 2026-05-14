@@ -178,9 +178,11 @@ export default function App() {
         onSubmit={onSubmit}
         loading={loading}
       />
-      <CitiesBanner onCitySelect={handleCitySelect} loading={loading} />
-
+      
       <main className="appContent">
+
+        <CitiesBanner onCitySelect={handleCitySelect} loading={loading} />
+
         {error.error && (
           <Alert severity="error" className="weatherAlert">
             {error.message}
