@@ -9,12 +9,9 @@ import {
 import Navbar from "./components/navBar";
 import "./App.css";
 
-const API_WEATHER =
-  // "https://api.worldweatheronline.com/premium/v1/weather.ashx?key=fe3597c6c0f04584b1e173127230512&q=";
-  
-  "https://api.weatherapi.com/v1/forecast.json?key=ffdd5d05d8f6478398e195037261405&lang=es";
-
+const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 const DEFAULT_CITY = "Cordoba, Argentina";
+const LANGUAGE = "es";
 
 export default function App() {
   const [city, setCity] = useState("");
@@ -27,78 +24,42 @@ export default function App() {
 
   const [weather, setWeather] = useState({
     city: "",
-    temp: "",
+    temp: null,
     icon: "",
     conditionText: "",
-    feel: "",
-    humidity: "",
-    wind: "",
+    feel: null,
+    humidity: null,
+    wind: null,
     date: "",
     sunrise: "",
     sunset: "",
   });
 
-  const translateCondition = useCallback((condition) => {
-  const conditions = {
-    sunny: "Soleado",
-    clear: "Despejado",
-    "partly cloudy": "Parcialmente nublado",
-    cloudy: "Nublado",
-    overcast: "Cubierto",
-    mist: "Neblina",
-    fog: "Niebla",
-    "patchy rain possible": "Posibles lluvias aisladas",
-    "light rain": "Lluvia ligera",
-    "moderate rain": "Lluvia moderada",
-    "heavy rain": "Lluvia fuerte",
-    thunderstorm: "Tormenta",
-    snow: "Nieve",
-  };
+  const parseWeatherData = useCallback((data) => {
+    if (!data?.current || !data?.location) {
+      throw new Error("No se pudo obtener el clima de esa ubicación.");
+    }
 
-  const normalizedCondition = condition.trim().toLowerCase();
+    const forecastDay = data.forecast?.forecastday?.[0];
 
-  return conditions[normalizedCondition] || condition;
-}, []);
+    setWeather({
+      city: `${data.location.name}, ${data.location.country}`,
+      temp: Math.round(data.current.temp_c),
+      icon: data.current.condition?.icon
+        ? `https:${data.current.condition.icon}`
+        : "",
+      conditionText: data.current.condition?.text || "",
+      feel: Math.round(data.current.feelslike_c),
+      humidity: data.current.humidity,
+      wind: Math.round(data.current.wind_kph),
+      date: forecastDay?.date || data.location.localtime?.split(" ")[0] || "",
+      sunrise: forecastDay?.astro?.sunrise || "",
+      sunset: forecastDay?.astro?.sunset || "",
+    });
+  }, []);
 
-  const parseWeatherData = useCallback(
-    (xmlDoc, cityName) => {
-      const tempC = xmlDoc.querySelector("temp_C")?.textContent;
-      const weatherIconUrl =
-        xmlDoc.querySelector("weatherIconUrl")?.textContent;
-      const weatherDesc = xmlDoc.querySelector("weatherDesc")?.textContent;
-      const feelsLike = xmlDoc.querySelector("FeelsLikeC")?.textContent;
-      const humidity = xmlDoc.querySelector("humidity")?.textContent;
-      const wind = xmlDoc.querySelector("windspeedKmph")?.textContent;
-      const date = xmlDoc.querySelector("weather > date")?.textContent;
-      const sunrise = xmlDoc.querySelector(
-        "weather > astronomy > sunrise"
-      )?.textContent;
-      const sunset = xmlDoc.querySelector(
-        "weather > astronomy > sunset"
-      )?.textContent;
-
-      if (!tempC) {
-        throw new Error("No se pudo obtener el clima de esa ubicación.");
-      }
-
-      setWeather({
-        city: cityName,
-        temp: tempC,
-        icon: weatherIconUrl || "",
-        conditionText: translateCondition(weatherDesc || ""),
-        feel: feelsLike || "",
-        humidity: humidity || "",
-        wind: wind || "",
-        date: date || "",
-        sunrise: sunrise || "",
-        sunset: sunset || "",
-      });
-    },
-    [translateCondition]
-  );
-
-  const getWeatherByCity = useCallback(
-    async (cityToSearch) => {
+  const getWeather = useCallback(
+    async (locationToSearch) => {
       setLoading(true);
       setError({
         error: false,
@@ -106,61 +67,40 @@ export default function App() {
       });
 
       try {
-        const response = await fetch(`${API_WEATHER}${cityToSearch}`);
-        const dataText = await response.text();
+        if (!API_KEY) {
+          throw new Error("Falta configurar la API key en el archivo .env.");
+        }
 
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(dataText, "text/xml");
+        const response = await fetch(
+          `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${encodeURIComponent(
+            locationToSearch
+          )}&days=1&aqi=no&alerts=no&lang=${LANGUAGE}`
+        );
 
-        const apiError = xmlDoc.querySelector("error > msg")?.textContent;
+        const data = await response.json();
 
-        if (apiError) {
+        if (!response.ok || data.error) {
           throw new Error(
-            "No encontramos esa ciudad. Probá con otra ubicación."
+            data.error?.message || "No encontramos esa ubicación."
           );
         }
 
-        const location =
-          xmlDoc.querySelector("request > query")?.textContent || cityToSearch;
-
-        parseWeatherData(xmlDoc, location);
+        parseWeatherData(data);
       } catch (error) {
         setError({
           error: true,
-          message: error.message,
+          message:
+            error.message ||
+            "No pudimos obtener el clima. Revisá la ciudad o la API key.",
         });
 
-        throw error;
+        console.error("Error obteniendo clima:", error.message);
       } finally {
         setLoading(false);
       }
     },
     [parseWeatherData]
   );
-
-  const getCityByCoordinates = useCallback(async (latitude, longitude) => {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
-      );
-
-      const data = await response.json();
-
-      const cityName =
-        data.address?.city ||
-        data.address?.town ||
-        data.address?.village ||
-        data.address?.state ||
-        "Ubicación actual";
-
-      const countryName = data.address?.country || "";
-
-      return countryName ? `${cityName}, ${countryName}` : cityName;
-    } catch (error) {
-      console.error("Error obteniendo nombre de ciudad:", error.message);
-      return "Ubicación actual";
-    }
-  }, []);
 
   const getLocationByIP = useCallback(async () => {
     try {
@@ -171,58 +111,19 @@ export default function App() {
         throw new Error("No se pudo obtener la ubicación por IP.");
       }
 
-      const locationByIP = `${data.city}, ${data.country_name}`;
-
-      await getWeatherByCity(locationByIP);
+      await getWeather(`${data.city}, ${data.country_name}`);
     } catch (error) {
       console.error("Error obteniendo ubicación por IP:", error.message);
-
-      await getWeatherByCity(DEFAULT_CITY);
+      await getWeather(DEFAULT_CITY);
     }
-  }, [getWeatherByCity]);
+  }, [getWeather]);
 
   const getWeatherByCoordinates = useCallback(
     async (coordinates) => {
-      setLoading(true);
-      setError({
-        error: false,
-        message: "",
-      });
-
-      try {
-        const response = await fetch(
-          `${API_WEATHER}${coordinates.latitude},${coordinates.longitude}`
-        );
-
-        const dataText = await response.text();
-
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(dataText, "text/xml");
-
-        const apiError = xmlDoc.querySelector("error > msg")?.textContent;
-
-        if (apiError) {
-          throw new Error("No se pudo obtener el clima por coordenadas.");
-        }
-
-        const cityName = await getCityByCoordinates(
-          coordinates.latitude,
-          coordinates.longitude
-        );
-
-        parseWeatherData(xmlDoc, cityName);
-      } catch (error) {
-        setError({
-          error: true,
-          message: error.message,
-        });
-
-        throw error;
-      } finally {
-        setLoading(false);
-      }
+      const locationByCoordinates = `${coordinates.latitude},${coordinates.longitude}`;
+      await getWeather(locationByCoordinates);
     },
-    [parseWeatherData, getCityByCoordinates]
+    [getWeather]
   );
 
   const onSubmit = async (e) => {
@@ -236,12 +137,8 @@ export default function App() {
       return;
     }
 
-    try {
-      await getWeatherByCity(city);
-      setCity("");
-    } catch (error) {
-      console.error("Error buscando ciudad:", error.message);
-    }
+    await getWeather(city);
+    setCity("");
   };
 
   useEffect(() => {
@@ -257,19 +154,9 @@ export default function App() {
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
 
-          try {
-            await getWeatherByCoordinates({ latitude, longitude });
-          } catch (error) {
-            console.error(
-              "Error obteniendo clima por coordenadas:",
-              error.message
-            );
-
-            getLocationByIP();
-          }
+          await getWeatherByCoordinates({ latitude, longitude });
         },
-        (error) => {
-          console.error("Error obteniendo ubicación:", error.message);
+        () => {
           getLocationByIP();
         }
       );
@@ -324,7 +211,7 @@ export default function App() {
                 )}
 
                 <Typography component="p" className="weatherTemperature">
-                  {weather.temp ? `${weather.temp}°C` : "--°C"}
+                  {weather.temp !== null ? `${weather.temp}°C` : "--°C"}
                 </Typography>
 
                 <Typography component="p" className="weatherCondition">
@@ -338,21 +225,21 @@ export default function App() {
                     Sensación térmica
                   </Typography>
                   <Typography className="detailValue">
-                    {weather.feel ? `${weather.feel} °C` : "-"}
+                    {weather.feel !== null ? `${weather.feel} °C` : "-"}
                   </Typography>
                 </Box>
 
                 <Box className="detailItem">
                   <Typography className="detailLabel">Humedad</Typography>
                   <Typography className="detailValue">
-                    {weather.humidity ? `${weather.humidity} %` : "-"}
+                    {weather.humidity !== null ? `${weather.humidity} %` : "-"}
                   </Typography>
                 </Box>
 
                 <Box className="detailItem">
                   <Typography className="detailLabel">Viento</Typography>
                   <Typography className="detailValue">
-                    {weather.wind ? `${weather.wind} km/h` : "-"}
+                    {weather.wind !== null ? `${weather.wind} km/h` : "-"}
                   </Typography>
                 </Box>
 
