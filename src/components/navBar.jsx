@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import {
   AppBar,
+  Autocomplete,
   Box,
   TextField,
   Toolbar,
@@ -8,6 +9,29 @@ import {
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import "./navBar.css";
+
+const cityOptions = [
+  "Córdoba, Argentina",
+  "Buenos Aires, Argentina",
+  "Rosario, Argentina",
+  "Mendoza, Argentina",
+  "La Plata, Argentina",
+  "San Miguel de Tucumán, Argentina",
+  "Mar del Plata, Argentina",
+  "Salta, Argentina",
+  "Santa Fe, Argentina",
+  "Bariloche, Argentina",
+  "Santiago, Chile",
+  "Montevideo, Uruguay",
+  "São Paulo, Brasil",
+  "Madrid, España",
+  "Barcelona, España",
+  "Ciudad de México, México",
+  "New York, USA",
+  "London, UK",
+  "Paris, France",
+  "Tokyo, Japan",
+];
 
 const Navbar = ({ city, setCity, onSubmit, loading }) => {
   return (
@@ -18,14 +42,21 @@ const Navbar = ({ city, setCity, onSubmit, loading }) => {
         </Typography>
 
         <Box component="form" onSubmit={onSubmit} className="navbarForm">
-          <TextField
+          <Autocomplete
+            freeSolo
+            options={cityOptions}
             value={city}
-            onChange={(e) => setCity(e.target.value)}
-            label="Ubicación"
-            placeholder="Ej: Córdoba"
-            variant="outlined"
-            size="small"
-            className="navbarInput"
+            onInputChange={(event, newInputValue) => setCity(newInputValue)}
+            onChange={(event, newValue) => setCity(newValue || "")}
+            className="navbarAutocomplete"
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Ubicación"
+                placeholder="Elegí o escribí una ciudad"
+                size="small"
+              />
+            )}
           />
 
           <LoadingButton
@@ -50,4 +81,3 @@ Navbar.propTypes = {
 };
 
 export default Navbar;
-

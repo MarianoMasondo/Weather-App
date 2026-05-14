@@ -134,6 +134,30 @@ export default function App() {
     [parseWeatherData]
   );
 
+  const getCityByCoordinates = useCallback(async (latitude, longitude) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`
+      );
+
+      const data = await response.json();
+
+      const cityName =
+        data.address?.city ||
+        data.address?.town ||
+        data.address?.village ||
+        data.address?.state ||
+        "Ubicación actual";
+
+      const countryName = data.address?.country || "";
+
+      return countryName ? `${cityName}, ${countryName}` : cityName;
+    } catch (error) {
+      console.error("Error obteniendo nombre de ciudad:", error.message);
+      return "Ubicación actual";
+    }
+  }, []);
+
   const getLocationByIP = useCallback(async () => {
     try {
       const response = await fetch("https://ipapi.co/json/");
@@ -177,11 +201,12 @@ export default function App() {
           throw new Error("No se pudo obtener el clima por coordenadas.");
         }
 
-        const location =
-          xmlDoc.querySelector("request > query")?.textContent ||
-          "Ubicación actual";
+        const cityName = await getCityByCoordinates(
+          coordinates.latitude,
+          coordinates.longitude
+        );
 
-        parseWeatherData(xmlDoc, location);
+        parseWeatherData(xmlDoc, cityName);
       } catch (error) {
         setError({
           error: true,
@@ -193,7 +218,7 @@ export default function App() {
         setLoading(false);
       }
     },
-    [parseWeatherData]
+    [parseWeatherData, getCityByCoordinates]
   );
 
   const onSubmit = async (e) => {
@@ -241,7 +266,6 @@ export default function App() {
         },
         (error) => {
           console.error("Error obteniendo ubicación:", error.message);
-
           getLocationByIP();
         }
       );

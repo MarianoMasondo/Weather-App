@@ -26,38 +26,46 @@
   gap: 12px;
 }
 
-.navbarInput {
-  width: 240px;
+.navbarAutocomplete {
+  width: 280px;
 }
 
-.navbarInput .MuiInputBase-root {
+.navbarAutocomplete .MuiInputBase-root {
   color: white;
   border-radius: 10px;
 }
 
-.navbarInput .MuiInputLabel-root {
+.navbarAutocomplete .MuiInputLabel-root {
   color: #cbd5e1;
 }
 
-.navbarInput .MuiInputLabel-root.Mui-focused {
+.navbarAutocomplete .MuiInputLabel-root.Mui-focused {
   color: white;
 }
 
-.navbarInput .MuiOutlinedInput-notchedOutline {
+.navbarAutocomplete .MuiOutlinedInput-notchedOutline {
   border-color: #94a3b8;
 }
 
-.navbarInput .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+.navbarAutocomplete
+  .MuiOutlinedInput-root:hover
+  .MuiOutlinedInput-notchedOutline {
   border-color: white;
 }
 
-.navbarInput .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+.navbarAutocomplete
+  .MuiOutlinedInput-root.Mui-focused
+  .MuiOutlinedInput-notchedOutline {
   border-color: white;
 }
 
-.navbarInput input::placeholder {
+.navbarAutocomplete input::placeholder {
   color: #cbd5e1;
   opacity: 1;
+}
+
+.navbarAutocomplete .MuiSvgIcon-root {
+  color: white;
 }
 
 .navbarButton {
@@ -89,7 +97,7 @@
     width: 100%;
   }
 
-  .navbarInput {
+  .navbarAutocomplete {
     flex: 1;
     width: auto;
   }
@@ -100,7 +108,7 @@
     flex-direction: column;
   }
 
-  .navbarInput,
+  .navbarAutocomplete,
   .navbarButton {
     width: 100% !important;
   }
