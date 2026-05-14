@@ -1,0 +1,107 @@
+.navbar {
+  background-color: rgba(31, 41, 55, 0.96) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22) !important;
+}
+
+.navbarToolbar {
+  width: min(100%, 1200px);
+  margin: 0 auto;
+  min-height: 72px !important;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.navbarTitle {
+  font-size: 32px !important;
+  font-weight: 800 !important;
+  color: white;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.navbarForm {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbarInput {
+  width: 240px;
+}
+
+.navbarInput .MuiInputBase-root {
+  color: white;
+  border-radius: 10px;
+}
+
+.navbarInput .MuiInputLabel-root {
+  color: #cbd5e1;
+}
+
+.navbarInput .MuiInputLabel-root.Mui-focused {
+  color: white;
+}
+
+.navbarInput .MuiOutlinedInput-notchedOutline {
+  border-color: #94a3b8;
+}
+
+.navbarInput .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: white;
+}
+
+.navbarInput .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: white;
+}
+
+.navbarInput input::placeholder {
+  color: #cbd5e1;
+  opacity: 1;
+}
+
+.navbarButton {
+  min-width: 110px !important;
+  height: 40px !important;
+  border-radius: 10px !important;
+  font-weight: 800 !important;
+  background-color: #2563eb !important;
+}
+
+.navbarButton:hover {
+  background-color: #1d4ed8 !important;
+}
+
+@media (max-width: 768px) {
+  .navbarToolbar {
+    padding: 18px 16px !important;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .navbarTitle {
+    font-size: 26px !important;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .navbarForm {
+    width: 100%;
+  }
+
+  .navbarInput {
+    flex: 1;
+    width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbarForm {
+    flex-direction: column;
+  }
+
+  .navbarInput,
+  .navbarButton {
+    width: 100% !important;
+  }
+}

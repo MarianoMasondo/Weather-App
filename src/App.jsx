@@ -1,10 +1,18 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-
-import { useState, useEffect } from "react";
-import { Container, Box, Typography } from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
+import {
+  Alert,
+  Box,
+  CircularProgress,
+  Container,
+  Typography,
+} from "@mui/material";
 import Navbar from "./components/navBar";
+import "./App.css";
 
-const API_WEATHER = `https://api.worldweatheronline.com/premium/v1/weather.ashx?key=fe3597c6c0f04584b1e173127230512&q=`;
+const API_WEATHER =
+  "https://api.worldweatheronline.com/premium/v1/weather.ashx?key=fe3597c6c0f04584b1e173127230512&q=";
+
+const DEFAULT_CITY = "Cordoba, Argentina";
 
 export default function App() {
   const [city, setCity] = useState("");
@@ -17,9 +25,7 @@ export default function App() {
 
   const [weather, setWeather] = useState({
     city: "",
-    country: "",
     temp: "",
-    condition: "",
     icon: "",
     conditionText: "",
     feel: "",
@@ -29,6 +35,26 @@ export default function App() {
     sunrise: "",
     sunset: "",
   });
+
+  const translateCondition = (condition) => {
+    const conditions = {
+      Sunny: "Soleado",
+      Clear: "Despejado",
+      "Partly Cloudy": "Parcialmente nublado",
+      Cloudy: "Nublado",
+      Overcast: "Cubierto",
+      Mist: "Neblina",
+      Fog: "Niebla",
+      "Patchy rain possible": "Posibles lluvias aisladas",
+      "Light rain": "Lluvia ligera",
+      "Moderate rain": "Lluvia moderada",
+      "Heavy rain": "Lluvia fuerte",
+      Thunderstorm: "Tormenta",
+      Snow: "Nieve",
+    };
+
+    return conditions[condition] || condition;
+  };
 
   const parseWeatherData = (xmlDoc, cityName) => {
     const tempC = xmlDoc.querySelector("temp_C")?.textContent;
@@ -46,15 +72,14 @@ export default function App() {
     )?.textContent;
 
     if (!tempC) {
-      throw new Error("No se pudo obtener la temperatura.");
+      throw new Error("No se pudo obtener el clima de esa ubicación.");
     }
 
     setWeather({
       city: cityName,
-      country: "",
       temp: tempC,
       icon: weatherIconUrl || "",
-      conditionText: weatherDesc || "",
+      conditionText: translateCondition(weatherDesc || ""),
       feel: feelsLike || "",
       humidity: humidity || "",
       wind: wind || "",
@@ -64,7 +89,7 @@ export default function App() {
     });
   };
 
-  const getWeatherByCity = async (cityToSearch) => {
+  const getWeatherByCity = useCallback(async (cityToSearch) => {
     setLoading(true);
     setError({
       error: false,
@@ -77,6 +102,12 @@ export default function App() {
 
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(dataText, "text/xml");
+
+      const apiError = xmlDoc.querySelector("error > msg")?.textContent;
+
+      if (apiError) {
+        throw new Error("No encontramos esa ciudad. Probá con otra ubicación.");
+      }
 
       const location =
         xmlDoc.querySelector("request > query")?.textContent || cityToSearch;
@@ -92,39 +123,9 @@ export default function App() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const getWeatherByCoordinates = async (coordinates) => {
-    setLoading(true);
-    setError({
-      error: false,
-      message: "",
-    });
-
-    try {
-      const response = await fetch(
-        `${API_WEATHER}${coordinates.latitude},${coordinates.longitude}`
-      );
-
-      const dataText = await response.text();
-
-      const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(dataText, "text/xml");
-
-      parseWeatherData(xmlDoc, "The weather here is...");
-    } catch (error) {
-      setError({
-        error: true,
-        message: error.message,
-      });
-
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getLocationByIP = async () => {
+  const getLocationByIP = useCallback(async () => {
     try {
       const response = await fetch("https://ipapi.co/json/");
       const data = await response.json();
@@ -137,12 +138,54 @@ export default function App() {
 
       await getWeatherByCity(locationByIP);
     } catch (error) {
-      console.error("Error getting location by IP:", error.message);
+      console.error("Error obteniendo ubicación por IP:", error.message);
 
-      // Si también falla la ubicación por IP, usamos Córdoba por defecto
-      await getWeatherByCity("Cordoba, Argentina");
+      await getWeatherByCity(DEFAULT_CITY);
     }
-  };
+  }, [getWeatherByCity]);
+
+  const getWeatherByCoordinates = useCallback(
+    async (coordinates) => {
+      setLoading(true);
+      setError({
+        error: false,
+        message: "",
+      });
+
+      try {
+        const response = await fetch(
+          `${API_WEATHER}${coordinates.latitude},${coordinates.longitude}`
+        );
+
+        const dataText = await response.text();
+
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(dataText, "text/xml");
+
+        const apiError = xmlDoc.querySelector("error > msg")?.textContent;
+
+        if (apiError) {
+          throw new Error("No se pudo obtener el clima por coordenadas.");
+        }
+
+        const location =
+          xmlDoc.querySelector("request > query")?.textContent ||
+          "Ubicación actual";
+
+        parseWeatherData(xmlDoc, location);
+      } catch (error) {
+        setError({
+          error: true,
+          message: error.message,
+        });
+
+        throw error;
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -150,24 +193,23 @@ export default function App() {
     if (!city.trim()) {
       setError({
         error: true,
-        message: "The city field is required",
+        message: "El campo ubicación es obligatorio.",
       });
       return;
     }
 
     try {
       await getWeatherByCity(city);
+      setCity("");
     } catch (error) {
-      console.error("Error searching city:", error.message);
+      console.error("Error buscando ciudad:", error.message);
     }
   };
 
   useEffect(() => {
     const getInitialLocation = () => {
       if (!navigator.geolocation) {
-        console.error("Geolocation is not supported by this browser.");
-
-        // Si el navegador no soporta geolocalización, usamos IP
+        console.error("El navegador no soporta geolocalización.");
         getLocationByIP();
         return;
       }
@@ -180,216 +222,149 @@ export default function App() {
           try {
             await getWeatherByCoordinates({ latitude, longitude });
           } catch (error) {
-            console.error("Error getting weather by coordinates:", error.message);
+            console.error(
+              "Error obteniendo clima por coordenadas:",
+              error.message
+            );
 
-            // Si falla el clima por coordenadas, usamos IP
             getLocationByIP();
           }
         },
         (error) => {
-          console.error("Error getting location:", error.message);
+          console.error("Error obteniendo ubicación:", error.message);
 
-          // Si el usuario rechaza ubicación, usamos IP
           getLocationByIP();
         }
       );
     };
 
     getInitialLocation();
-  }, []);
+  }, [getLocationByIP, getWeatherByCoordinates]);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        width: "100vw",
-        minHeight: "100vh",
-        backgroundImage:
-          "url(https://wallpapers.com/images/hd/sky-clouds-hd-desktop-wallpaper-high-definition-fullscreen-yqckhncsi87skp5n.webp)",
-        backgroundSize: "cover",
-      }}
-    >
-      <div style={{ flex: 1 }}>
-        <Navbar
-          city={city}
-          setCity={setCity}
-          onSubmit={onSubmit}
-          loading={loading}
-          error={error}
-        />
-      </div>
+    <div className="app">
+      <Navbar
+        city={city}
+        setCity={setCity}
+        onSubmit={onSubmit}
+        loading={loading}
+      />
 
-      <Container
-        sx={{
-          backgroundColor: "rgba(173, 181, 189, 0.4)",
-          backgroundSize: "cover",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          width: { xs: "100%", md: "40%" },
-          borderRadius: "20px",
-          marginBottom: { xs: "100%", md: "17.5%" },
-          marginTop: { xs: "50%", md: "5.5%" },
-          padding: "20px",
-        }}
-      >
-        <Box
-          sx={{
-            display: "grid",
-            gap: 2,
-            gridTemplateColumns: "repeat(3, 1fr)",
-            margin: "2%",
-          }}
-        >
-          <Box
-            sx={{
-              gridColumn: "1 / span 1",
-              textAlign: "center",
-            }}
-          >
-            <Typography
-              variant="h5"
-              component="h2"
-              mb="10%"
-              sx={{ fontWeight: "bold" }}
-            >
-              {weather.city} {weather.country}
-            </Typography>
+      <main className="appContent">
+        {error.error && (
+          <Alert severity="error" className="weatherAlert">
+            {error.message}
+          </Alert>
+        )}
 
-            {weather.icon && (
-              <Box
-                component="img"
-                alt={weather.conditionText || "weather icon"}
-                src={weather.icon}
-                sx={{ width: "100px", height: "100px" }}
-              />
-            )}
+        <Container className="weatherCard">
+          {loading ? (
+            <Box className="loadingBox">
+              <CircularProgress />
+              <Typography className="loadingText">
+                Buscando el clima...
+              </Typography>
+            </Box>
+          ) : (
+            <>
+              <Box className="weatherHeader">
+                <Typography component="p" className="weatherSubtitle">
+                  Clima actual en
+                </Typography>
 
-            <Typography
-              variant="h6"
-              component="h3"
-              mt="10%"
-              sx={{ fontWeight: "bold" }}
-            >
-              Temperature:
-            </Typography>
+                <Typography component="h1" className="weatherCity">
+                  {weather.city || "Cargando ubicación..."}
+                </Typography>
+              </Box>
 
-            <Typography variant="h6" component="h1">
-              {weather.temp} °C
-            </Typography>
+              <Box className="weatherMain">
+                {weather.icon && (
+                  <img
+                    src={weather.icon}
+                    alt={weather.conditionText || "Ícono del clima"}
+                    className="weatherIcon"
+                  />
+                )}
 
-            <Typography
-              variant="h5"
-              component="h3"
-              mt="10%"
-              sx={{ fontWeight: "bold" }}
-            >
-              {weather.conditionText}
-            </Typography>
-          </Box>
+                <Typography component="p" className="weatherTemperature">
+                  {weather.temp ? `${weather.temp}°C` : "--°C"}
+                </Typography>
 
-          <Box
-            sx={{
-              gridColumn: "2 / span 1",
-              textAlign: "left",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "left",
-              justifyContent: "center",
-            }}
-          >
-            <Typography variant="h6" component="h1" sx={{ fontWeight: "bold" }}>
-              Feels like:
-            </Typography>
+                <Typography component="p" className="weatherCondition">
+                  {weather.conditionText || "Obteniendo información..."}
+                </Typography>
+              </Box>
 
-            <Typography variant="h6" component="h1">
-              {weather.feel} °C
-            </Typography>
+              <Box className="weatherDetails">
+                <Box className="detailItem">
+                  <Typography className="detailLabel">
+                    Sensación térmica
+                  </Typography>
+                  <Typography className="detailValue">
+                    {weather.feel ? `${weather.feel} °C` : "-"}
+                  </Typography>
+                </Box>
 
-            <Typography variant="h6" component="h1" sx={{ fontWeight: "bold" }}>
-              Humidity:
-            </Typography>
+                <Box className="detailItem">
+                  <Typography className="detailLabel">Humedad</Typography>
+                  <Typography className="detailValue">
+                    {weather.humidity ? `${weather.humidity} %` : "-"}
+                  </Typography>
+                </Box>
 
-            <Typography variant="h6" component="h1">
-              {weather.humidity} %
-            </Typography>
+                <Box className="detailItem">
+                  <Typography className="detailLabel">Viento</Typography>
+                  <Typography className="detailValue">
+                    {weather.wind ? `${weather.wind} km/h` : "-"}
+                  </Typography>
+                </Box>
 
-            <Typography variant="h6" component="h1" sx={{ fontWeight: "bold" }}>
-              Wind:
-            </Typography>
+                <Box className="detailItem">
+                  <Typography className="detailLabel">Fecha</Typography>
+                  <Typography className="detailValue">
+                    {weather.date || "-"}
+                  </Typography>
+                </Box>
 
-            <Typography variant="h6" component="h1">
-              {weather.wind} km/h
-            </Typography>
-          </Box>
+                <Box className="detailItem">
+                  <Typography className="detailLabel">Amanecer</Typography>
+                  <Typography className="detailValue">
+                    {weather.sunrise || "-"}
+                  </Typography>
+                </Box>
 
-          <Box
-            sx={{
-              gridColumn: "3 / span 1",
-              textAlign: "left",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "left",
-              justifyContent: "center",
-            }}
-          >
-            <Typography variant="h6" component="h1" sx={{ fontWeight: "bold" }}>
-              Date:
-            </Typography>
+                <Box className="detailItem">
+                  <Typography className="detailLabel">Atardecer</Typography>
+                  <Typography className="detailValue">
+                    {weather.sunset || "-"}
+                  </Typography>
+                </Box>
+              </Box>
+            </>
+          )}
+        </Container>
+      </main>
 
-            <Typography variant="h6" component="h1">
-              {weather.date}
-            </Typography>
-
-            <Typography variant="h6" component="h1" sx={{ fontWeight: "bold" }}>
-              Sunrise:
-            </Typography>
-
-            <Typography variant="h6" component="h1">
-              {weather.sunrise}
-            </Typography>
-
-            <Typography variant="h6" component="h1" sx={{ fontWeight: "bold" }}>
-              Sunset:
-            </Typography>
-
-            <Typography variant="h6" component="h1">
-              {weather.sunset}
-            </Typography>
-          </Box>
-        </Box>
-      </Container>
-
-      <footer
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "8px",
-          backgroundColor: "#343a40",
-          color: "white",
-          minHeight: "5vh",
-        }}
-      >
-        <Typography sx={{ fontSize: "15px", mr: "3%" }}>
-          Powered by:{" "}
+      <footer className="footer">
+        <Typography className="footerText">
+          Datos del clima por{" "}
           <a
             href="https://www.weatherapi.com/"
             title="Weather API"
-            style={{ textDecoration: "none", color: "white" }}
+            target="_blank"
+            rel="noreferrer"
           >
             WeatherAPI.com
           </a>
         </Typography>
 
-        <Typography sx={{ fontSize: "15px", ml: "3%" }}>
-          Developed by:{" "}
+        <Typography className="footerText">
+          Desarrollado por{" "}
           <a
             href="https://marianomasondo.github.io/Porfolio/"
             title="Mariano Masondo"
-            style={{ textDecoration: "none", color: "white" }}
+            target="_blank"
+            rel="noreferrer"
           >
             Mariano Masondo
           </a>

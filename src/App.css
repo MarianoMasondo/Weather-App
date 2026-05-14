@@ -1,0 +1,203 @@
+.app {
+  width: 100vw;
+  min-height: 100vh;
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.38)),
+    url("https://wallpapers.com/images/hd/sky-clouds-hd-desktop-wallpaper-high-definition-fullscreen-yqckhncsi87skp5n.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+}
+
+.appContent {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 70px;
+}
+
+.weatherAlert {
+  width: min(90%, 720px);
+  margin-bottom: 24px;
+}
+
+.weatherCard {
+  width: min(90%, 720px) !important;
+  padding: 36px !important;
+  border-radius: 28px !important;
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  color: #0f172a;
+}
+
+.weatherHeader {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.weatherSubtitle {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  color: #1e293b;
+}
+
+.weatherCity {
+  font-size: 32px !important;
+  font-weight: 900 !important;
+  margin-top: 4px !important;
+  color: #0f172a;
+}
+
+.weatherMain {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.weatherIcon {
+  width: 108px;
+  height: 108px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.weatherTemperature {
+  font-size: 68px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  color: #0f172a;
+}
+
+.weatherCondition {
+  font-size: 25px !important;
+  font-weight: 800 !important;
+  margin-top: 12px !important;
+  text-align: center;
+  color: #111827;
+}
+
+.weatherDetails {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.detailItem {
+  background: rgba(255, 255, 255, 0.48);
+  border-radius: 18px;
+  padding: 15px 14px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
+}
+
+.detailLabel {
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  color: #334155;
+  margin-bottom: 5px !important;
+}
+
+.detailValue {
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  color: #0f172a;
+}
+
+.loadingBox {
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingText {
+  margin-top: 18px !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #0f172a;
+}
+
+.footer {
+  min-height: 58px;
+  padding: 12px 24px;
+  background-color: rgba(31, 41, 55, 0.96);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 36px;
+  flex-wrap: wrap;
+}
+
+.footerText {
+  font-size: 15px !important;
+}
+
+.footer a {
+  color: white;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .appContent {
+    padding-top: 40px;
+  }
+
+  .weatherCard {
+    padding: 26px !important;
+  }
+
+  .weatherCity {
+    font-size: 25px !important;
+  }
+
+  .weatherTemperature {
+    font-size: 54px !important;
+  }
+
+  .weatherCondition {
+    font-size: 22px !important;
+  }
+
+  .weatherDetails {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .footer {
+    gap: 8px;
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .appContent {
+    padding-top: 30px;
+  }
+
+  .weatherCard {
+    width: 92% !important;
+    padding: 22px !important;
+  }
+
+  .weatherDetails {
+    grid-template-columns: 1fr;
+  }
+
+  .weatherTemperature {
+    font-size: 48px !important;
+  }
+}
