@@ -1,9 +1,11 @@
 import PropTypes from "prop-types";
-import "./CitiesBanner.css";
+import "./citiesBanner.css";
 
 const cities = [
   "Córdoba, Argentina",
   "Buenos Aires, Argentina",
+  "Rosario, Argentina",
+  "Mendoza, Argentina",
   "London, United Kingdom",
   "New York, USA",
   "Paris, France",

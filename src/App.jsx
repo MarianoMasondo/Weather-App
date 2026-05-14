@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import Navbar from "./components/navBar/navBar";
-import CitiesBanner from "./components/CitiesBanner/CitiesBanner";
+import CitiesBanner from "./components/citiesBanner/citiesBanner";
 import "./App.css";
 
 const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
@@ -142,6 +142,10 @@ export default function App() {
     setCity("");
   };
 
+  const handleCitySelect = async (selectedCity) => {
+    await getWeather(selectedCity);
+  };
+
   useEffect(() => {
     const getInitialLocation = () => {
       if (!navigator.geolocation) {
@@ -166,10 +170,6 @@ export default function App() {
     getInitialLocation();
   }, [getLocationByIP, getWeatherByCoordinates]);
 
-  const handleCitySelect = async (selectedCity) => {
-  await getWeather(selectedCity);
-};
-
   return (
     <div className="app">
       <Navbar
@@ -179,10 +179,7 @@ export default function App() {
         loading={loading}
       />
 
-      <h1 style={{ color: "red" }}>TEST BANNER</h1>
-      
       <main className="appContent">
-
         <CitiesBanner onCitySelect={handleCitySelect} loading={loading} />
 
         {error.error && (

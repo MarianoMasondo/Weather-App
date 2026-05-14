@@ -1,9 +1,9 @@
 .citiesBanner {
   width: min(92%, 980px);
-  margin-top: 24px;
+  margin-bottom: 26px;
   padding: 14px 18px;
   border-radius: 18px;
-  background: rgba(15, 23, 42, 0.55);
+  background: rgba(15, 23, 42, 0.58);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 12px 30px rgba(15, 23, 42, 0.22);
@@ -61,7 +61,7 @@
 @media (max-width: 768px) {
   .citiesBanner {
     width: 92%;
-    margin-top: 18px;
+    margin-bottom: 20px;
   }
 
   .citiesBannerTitle {
